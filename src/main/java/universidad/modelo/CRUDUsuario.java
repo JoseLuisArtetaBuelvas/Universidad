@@ -7,6 +7,30 @@ public class CRUDUsuario {
     private Usuario alguien;
     private ConexionBaseDatos baseDatos;
 
+
+    //Constructor por defecto
+    public CRUDUsuario() throws Exception{
+        this.alguien = new Usuario();
+        this.baseDatos = new ConexionBaseDatos();
+    }
+
+    //Getters y Setters
+    public Usuario getAlguien() {
+        return alguien;
+    }
+    public void setAlguien(Usuario alguien) {
+        this.alguien = alguien;
+    }
+
+    public ConexionBaseDatos getBaseDatos() {
+        return baseDatos;
+    }
+
+    public void setBaseDatos(ConexionBaseDatos baseDatos) {
+        this.baseDatos = baseDatos;
+    }
+
+
     //Insertar usuarios
     public void agregarUsuario() throws Exception{
         if(alguien.getId()==null || alguien.getId().isEmpty()){
