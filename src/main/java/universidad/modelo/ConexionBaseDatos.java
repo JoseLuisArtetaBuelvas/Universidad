@@ -7,7 +7,7 @@ public class ConexionBaseDatos {
     //Variables
     protected String driver = "com.mysql.cj.jdbc.Driver";
     protected String nombreIPServidorBD = "localhost";
-    protected String url = "jdb:mysql://";
+    protected String url = "jdbc:mysql://";
     protected int puertoServidorBD = 3306;
     protected String usuarioBD = "root";
     protected String passwordUsuarioBD = "admin";
@@ -18,9 +18,11 @@ public class ConexionBaseDatos {
 
     //Setters y Getters
     public Connection getConnection(){
-        return  null;
-    };
-    public void setConextion(Connection conexion){}
+        return conexion;
+    }
+    public void setConexion(Connection conexion){
+        this.conexion = conexion;
+    }
 
     public String getDriver(){
         return driver;
@@ -31,9 +33,11 @@ public class ConexionBaseDatos {
     }
 
     public ResultSet getFilasConsulta(){
-        return null;
+        return filasConsulta;
     }
-    public void setFilasConsulta(ResultSet filasConsulta){}
+    public void setFilasConsulta(ResultSet filasConsulta){
+        this.filasConsulta = filasConsulta;
+    }
 
     public String getNombreBD(){
         return nombreBD;
@@ -68,10 +72,12 @@ public class ConexionBaseDatos {
     }
 
     public PreparedStatement getSentencia(){
-        return null;
+        return sentencia;
     }
 
-    public void setSentencia(PreparedStatement sentencia){}
+    public void setSentencia(PreparedStatement sentencia){
+        this.sentencia = sentencia;
+    }
 
     public String getUrl(){
         return url;
