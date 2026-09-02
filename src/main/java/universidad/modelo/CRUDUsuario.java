@@ -48,8 +48,8 @@ public class CRUDUsuario {
             //Pasarle los datos del usuario a la sentencia SQL
             sentenciaSQL.setString(1, alguien.getId());
             sentenciaSQL.setString(2, alguien.getClave());
-            sentenciaSQL.setString(2, alguien.getNombre());
-            sentenciaSQL.setString(3, alguien.getRol());
+            sentenciaSQL.setString(3, alguien.getNombre());
+            sentenciaSQL.setString(4, alguien.getRol());
 
             //Actualizar la BD usando la sentenciaSQL con los datos del usuario
 
@@ -77,9 +77,10 @@ public class CRUDUsuario {
             //Crear una sentencia JDBC mediante la sentencia SQL anterior
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlUpdate);
             //Pasarle los datos del usuario a la sentencia SQL
+            sentenciaSQL.setString(1, alguien.getId());
             sentenciaSQL.setString(2, alguien.getClave());
-            sentenciaSQL.setString(2, alguien.getNombre());
-            sentenciaSQL.setString(3, alguien.getRol());
+            sentenciaSQL.setString(3, alguien.getNombre());
+            sentenciaSQL.setString(4, alguien.getRol());
 
             //Actualizar la BD usando la sentenciaSQL con los datos del usuario
 
@@ -219,7 +220,7 @@ public class CRUDUsuario {
                 alguien.setClave(resultado.getString("clave"));
                 alguien.setNombre(resultado.getString("nombre"));
                 alguien.setRol(resultado.getString("rol"));
-                listado[resultado.getRow()] = alguien;
+                listado[resultado.getRow()-1] = alguien;
             }if(listado.length <= 0){
                 throw new Exception("Error al listar los usuarios");
             }
