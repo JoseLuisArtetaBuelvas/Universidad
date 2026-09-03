@@ -24,7 +24,7 @@
 
                         <div>
                             <input type="submit" value="Iniciar Sesión">
-                            <a href="web/usuario/recuperar-contrasena.jsp">Recuperar contraseña</a>
+                            <a href="${pageContext.request.contextPath}/usuario/recuperar-contrasena.jsp">Recuperar contraseña</a>
                         </div>
 
                     </div>
