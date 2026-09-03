@@ -39,7 +39,7 @@ public class CRUDUsuario {
 
         //Armaar SQL Update de forma dinámica
         String sqlInsert = "INSERT INTO Usuarios "
-                + "(id=?, password=?, nombre=?, rol=? )"
+                + "(id=?, clave?, nombre=?, rol=? )"
                 + "VALUES(?,?,?,?)";
 
         try {
@@ -70,7 +70,7 @@ public class CRUDUsuario {
 
         //Armaar SQL Update de forma dinámica
         String sqlUpdate = "UPDATE Usuarios "
-                + "SET password=?, nombre=?, rol=? "
+                + "SET clave=?, nombre=?, rol=? "
                 + "WHERE id=?";
 
         try {
@@ -126,7 +126,7 @@ public class CRUDUsuario {
 
         //Armaar SQL Update de forma dinámica
         String sqlSelect = "SELECT * FROM Usuarios "
-                + "WHERE id=? AND password=?";
+                + "WHERE id=? AND clave=?";
 
         try {
             //Crear una sentencia JDBC mediante la sentencia SQL anterior
