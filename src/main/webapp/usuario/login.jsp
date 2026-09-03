@@ -12,7 +12,7 @@
         <body>
             <h1>Iniciar Sesión en el Sistema</h1>
             <div class="content_form">
-                <form action="${pageContext.request.contextPath}/usuario/" method="post">
+                <form action="${pageContext.request.contextPath}/usuario" method="post">
                     <input type="hidden" name="accion" value="login">
 
                     <div>
