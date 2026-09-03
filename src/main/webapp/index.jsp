@@ -2,7 +2,7 @@
 <%@ page import="universidad.modelo.Usuario" %>
 <%
     //Obtener al usuario guardado en la sesión
-    Usuario usuarioLogueado = (Usuario) session.getAttribute("usuarioLogueado");
+    Usuario usuarioLogueado = (Usuario) session.getAttribute("usuario.login");
     //If no hay una sesion iniciada, redirigir al login
     if(usuarioLogueado == null){
         response.sendRedirect(request.getContextPath() + "/usuario/login.jsp");
