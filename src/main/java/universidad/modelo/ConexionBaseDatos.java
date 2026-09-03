@@ -5,11 +5,11 @@ import java.sql.*;
 public class ConexionBaseDatos {
 
     //Variables
-    protected String driver = "com.mysql.cj.jdbc.Driver";
+    protected String driver = "org.postgresql.Driver";
     protected String nombreIPServidorBD = "localhost";
-    protected String url = "jdbc:mysql://";
-    protected int puertoServidorBD = 3306;
-    protected String usuarioBD = "root";
+    protected String url = "jdbc:postgresql://";
+    protected int puertoServidorBD = 5432;
+    protected String usuarioBD = "postgres";
     protected String passwordUsuarioBD = "admin";
     protected String nombreBD = "7502523005_2_Universidad";
     private Connection conexion;
@@ -162,7 +162,7 @@ public class ConexionBaseDatos {
     //Crear la sentencia SQL
     public PreparedStatement crearSentencia(String sql) throws Exception{
         try{
-            PreparedStatement sentencia = conexion.prepareStatement(sql);
+            PreparedStatement sentencia = conexion.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             return sentencia;
         }
         catch (SQLException e){
