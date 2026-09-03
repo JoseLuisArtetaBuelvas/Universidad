@@ -7,7 +7,7 @@ import jakarta.servlet.*;
 import universidad.modelo.CRUDUsuario;
 import universidad.modelo.Usuario;
 //Generar archivo de despligue de nuestra aplicación (inicial o index.html)
-@WebServlet(name = "usuarioServlet", value = "/usuario")
+@WebServlet(name = "usuarioServlet", urlPatterns = {"/usuario", "/usuario/"})
 
 public class ServletUsuario extends HttpServlet {
 
