@@ -33,20 +33,26 @@ public class CRUDUsuario {
 
     //Insertar usuarios
     public void agregarUsuario() throws Exception{
-        if(alguien.getId()==null || alguien.getId().isEmpty()){
+        if(alguien.getId()==null || alguien.getId().trim().isEmpty()){
             throw new Exception("El ID del Usuario es Necesario");
         }
+        int idNumerico;
+        try {
+            idNumerico = Integer.parseInt(alguien.getId().trim());
+        } catch (NumberFormatException e) {
+            throw new Exception("El ID del Usuario debe ser un número entero válido");
+        }
 
-        //Armaar SQL Update de forma dinámica
-        String sqlInsert = "INSERT INTO Usuarios "
-                + "(id=?, clave?, nombre=?, rol=? )"
+        //Armar SQL Insert de forma dinámica
+        String sqlInsert = "INSERT INTO usuarios "
+                + "(id, clave, nombre, rol) "
                 + "VALUES(?,?,?,?)";
 
         try {
             //Crear una sentencia JDBC mediante la sentencia SQL anterior
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlInsert);
             //Pasarle los datos del usuario a la sentencia SQL
-            sentenciaSQL.setString(1, alguien.getId());
+            sentenciaSQL.setInt(1, idNumerico);
             sentenciaSQL.setString(2, alguien.getClave());
             sentenciaSQL.setString(3, alguien.getNombre());
             sentenciaSQL.setString(4, alguien.getRol());
@@ -64,12 +70,18 @@ public class CRUDUsuario {
 
     //Modificar usuarios
     public void modificarUsuario() throws Exception {
-        if (alguien.getId() == null || alguien.getId().isEmpty()) {
+        if (alguien.getId() == null || alguien.getId().trim().isEmpty()) {
             throw new Exception("El ID del Usuario es Necesario");
         }
+        int idNumerico;
+        try {
+            idNumerico = Integer.parseInt(alguien.getId().trim());
+        } catch (NumberFormatException e) {
+            throw new Exception("El ID del Usuario debe ser un número entero válido");
+        }
 
-        //Armaar SQL Update de forma dinámica
-        String sqlUpdate = "UPDATE Usuarios "
+        //Armar SQL Update de forma dinámica
+        String sqlUpdate = "UPDATE usuarios "
                 + "SET clave=?, nombre=?, rol=? "
                 + "WHERE id=?";
 
@@ -77,10 +89,10 @@ public class CRUDUsuario {
             //Crear una sentencia JDBC mediante la sentencia SQL anterior
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlUpdate);
             //Pasarle los datos del usuario a la sentencia SQL
-            sentenciaSQL.setString(1, alguien.getId());
-            sentenciaSQL.setString(2, alguien.getClave());
-            sentenciaSQL.setString(3, alguien.getNombre());
-            sentenciaSQL.setString(4, alguien.getRol());
+            sentenciaSQL.setString(1, alguien.getClave());
+            sentenciaSQL.setString(2, alguien.getNombre());
+            sentenciaSQL.setString(3, alguien.getRol());
+            sentenciaSQL.setInt(4, idNumerico);
 
             //Actualizar la BD usando la sentenciaSQL con los datos del usuario
 
@@ -94,19 +106,25 @@ public class CRUDUsuario {
 
     //Elimninar usuarios
     public void eliminarUsuario() throws Exception {
-        if (alguien.getId() == null || alguien.getId().isEmpty()) {
+        if (alguien.getId() == null || alguien.getId().trim().isEmpty()) {
             throw new Exception("El ID del Usuario es Necesario");
         }
+        int idNumerico;
+        try {
+            idNumerico = Integer.parseInt(alguien.getId().trim());
+        } catch (NumberFormatException e) {
+            throw new Exception("El ID del Usuario debe ser un número entero válido");
+        }
 
-        //Armaar SQL Update de forma dinámica
-        String sqlInsert = "DELETE FROM Usuarios "
+        //Armar SQL Delete de forma dinámica
+        String sqlDelete = "DELETE FROM usuarios "
                 + "WHERE id=?";
 
         try {
             //Crear una sentencia JDBC mediante la sentencia SQL anterior
-            PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlInsert);
+            PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlDelete);
             //Pasarle los datos del usuario a la sentencia SQL
-            sentenciaSQL.setString(1, alguien.getId());
+            sentenciaSQL.setInt(1, idNumerico);
 
             //Actualizar la BD usando la sentenciaSQL con los datos del usuario
 
@@ -120,12 +138,18 @@ public class CRUDUsuario {
 
     //Iniciar sesion
     public Usuario iniciarSesion(String id, String password) throws Exception {
-        if (id == null || id.isEmpty() || password == null || password.isEmpty()) {
-            throw new Exception("El ID y el Password del Usuario es Necesarios");
+        if (id == null || id.trim().isEmpty() || password == null || password.isEmpty()) {
+            throw new Exception("El ID y la Clave del Usuario son necesarios");
+        }
+        int idNumerico;
+        try {
+            idNumerico = Integer.parseInt(id.trim());
+        } catch (NumberFormatException e) {
+            throw new Exception("El ID del Usuario debe ser un número entero válido");
         }
 
-        //Armaar SQL Update de forma dinámica
-        String sqlSelect = "SELECT * FROM Usuarios "
+        //Armar SQL Select de forma dinámica
+        String sqlSelect = "SELECT * FROM usuarios "
                 + "WHERE id=? AND clave=?";
 
         try {
@@ -133,24 +157,24 @@ public class CRUDUsuario {
             baseDatos = new ConexionBaseDatos();
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlSelect);
             //Pasarle los datos del usuario a la sentencia SQL
-            sentenciaSQL.setString(1, id);
+            sentenciaSQL.setInt(1, idNumerico);
             sentenciaSQL.setString(2, password);
 
             //Verificar el resultado de la consulta:
             ResultSet resultado = baseDatos.consultar(sentenciaSQL);
             if (resultado.next()) {
                 alguien = new Usuario();
-                alguien.setId(resultado.getString("id"));
+                alguien.setId(String.valueOf(resultado.getInt("id")));
                 alguien.setClave(resultado.getString("clave"));
                 alguien.setNombre(resultado.getString("nombre"));
                 alguien.setRol(resultado.getString("rol"));
                 return alguien;
             } else {
-                throw new Exception("Error al consultar Usuario " + id+ "<br/>Explicacion:");
+                throw new Exception("El ID o la Clave son incorrectos");
             }
         }
         catch (Exception e) {
-            throw new Exception(e.getMessage()+"Error en el ID o el Password estan Errados");
+            throw new Exception("Error al iniciar sesión: " + e.getMessage());
         }finally{
             if(baseDatos!=null){
                 baseDatos.desconectar();
@@ -160,13 +184,20 @@ public class CRUDUsuario {
 
     //Consultar usuario
     public Usuario consultarUsuario(String id) throws Exception {
-        if (id == null || id.isEmpty()) {
+        if (id == null || id.trim().isEmpty()) {
             throw new Exception("El ID del Usuario es Necesario");
         }
+        int idNumerico;
+        try {
+            idNumerico = Integer.parseInt(id.trim());
+        } catch (NumberFormatException e) {
+            throw new Exception("El ID del Usuario debe ser un número entero válido");
+        }
+
         Usuario alguien;
         ConexionBaseDatos baseDatos = null;
-        //Armaar SQL Update de forma dinámica
-        String sqlSelect = "SELECT * FROM Usuarios "
+        //Armar SQL Select de forma dinámica
+        String sqlSelect = "SELECT * FROM usuarios "
                 + "WHERE id=?";
 
         try {
@@ -174,23 +205,23 @@ public class CRUDUsuario {
             baseDatos = new ConexionBaseDatos();
             PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlSelect);
             //Pasarle los datos del usuario a la sentencia SQL
-            sentenciaSQL.setString(1, id);
+            sentenciaSQL.setInt(1, idNumerico);
 
             //Verificar el resultado de la consulta:
             ResultSet resultado = baseDatos.consultar(sentenciaSQL);
             if (resultado.next()) {
                 alguien = new Usuario();
-                alguien.setId(resultado.getString("id"));
+                alguien.setId(String.valueOf(resultado.getInt("id")));
                 alguien.setClave(resultado.getString("clave"));
                 alguien.setNombre(resultado.getString("nombre"));
                 alguien.setRol(resultado.getString("rol"));
                 return alguien;
             } else {
-                throw new Exception("Error al consultar Usuario " + id+ "<br/>Explicacion:");
+                throw new Exception("Error al consultar Usuario " + id+ "<br/>Explicacion: Usuario no encontrado");
             }
         }
         catch (Exception e) {
-            throw new Exception(e.getMessage()+"Error en el ID o el Password estan Errados");
+            throw new Exception("Error al consultar: " + e.getMessage());
         }finally{
             if(baseDatos!=null){
                 baseDatos.desconectar();
@@ -203,8 +234,8 @@ public class CRUDUsuario {
         Usuario alguien;
         ConexionBaseDatos baseDatos = null;
 
-        //Armar el SQL SELECT d e forma dinamica
-        String sqlSelect = "SELECT * FROM Usuarios ";
+        //Armar el SQL SELECT de forma dinamica
+        String sqlSelect = "SELECT * FROM usuarios ";
         try {
             //Crea una sentencia JDBX mediante la sentencia SQL anterior
             baseDatos = new ConexionBaseDatos();
@@ -216,7 +247,7 @@ public class CRUDUsuario {
             resultado.beforeFirst();//Nos colocamos antes del primer registro
             while (resultado.next()) {
                 alguien = new Usuario();
-                alguien.setId(resultado.getString("id"));
+                alguien.setId(String.valueOf(resultado.getInt("id")));
                 alguien.setClave(resultado.getString("clave"));
                 alguien.setNombre(resultado.getString("nombre"));
                 alguien.setRol(resultado.getString("rol"));
