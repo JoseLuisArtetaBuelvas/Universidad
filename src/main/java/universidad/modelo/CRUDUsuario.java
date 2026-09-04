@@ -1,5 +1,7 @@
 package universidad.modelo;
 
+import universidad.servicios.ServicioCorreo;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
@@ -271,7 +273,7 @@ public class CRUDUsuario {
             throw new Exception("El ID y el correo electrónico son necesarios");
         }
 
-        Usuario usuario = consultarUsuario(id).trim();
+        Usuario usuario = consultarUsuario(id);
         if(usuario == null) {
             throw new Exception("No existe el usuario con el ID: " + id);
         }
