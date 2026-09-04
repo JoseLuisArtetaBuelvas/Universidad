@@ -1,71 +1,132 @@
 package universidad.controladores;
 
-import java.io.*;
-import jakarta.servlet.http.*;
-import jakarta.servlet.annotation.*;
-import jakarta.servlet.*;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import universidad.modelo.CRUDUsuario;
 import universidad.modelo.Usuario;
-//Generar archivo de despligue de nuestra aplicación (inicial o index.html)
-@WebServlet(name = "usuarioServlet", urlPatterns = {"/usuario"}) 
 
+@WebServlet(name = "usuarioServlet", urlPatterns = {"/usuario"})
 public class ServletUsuario extends HttpServlet {
 
-    //Metodo para procesar las peticiones
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
+        
+        String contextPath = request.getContextPath();
+        String accion = request.getParameter("accion");
+
+        // Si no se envía acción, redirigir al login
+        if (accion == null || accion.trim().isEmpty()) {
+            response.sendRedirect(contextPath + "/usuario/login.jsp");
+            return;
+        }
+
+        accion = accion.trim().toLowerCase();
+        HttpSession sesion = request.getSession();
+
         try {
             CRUDUsuario crudUsuario = new CRUDUsuario();
-            String accion = request.getParameter("accion"); //capturar la accion
-            if ("agregar".equals(accion)) {
-                crudUsuario.getAlguien().setId(request.getParameter("id"));
-                crudUsuario.getAlguien().setClave(request.getParameter("clave"));
-                crudUsuario.getAlguien().setNombre(request.getParameter("nombre"));
-                crudUsuario.getAlguien().setRol(request.getParameter("rol"));
-                crudUsuario.agregarUsuario();
-                response.sendRedirect("usuario/agregar.jsp?mensaje=Usuario " + request.getParameter("id") + " Agregado en el sistema");
-            } else if ("buscar".equals(accion)) {
-                Usuario usuario = crudUsuario.consultarUsuario(request.getParameter("id"));
-                request.getSession().setAttribute("usuario.buscar", usuario);
-                String redirecion = request.getParameter("redirecion");
-                if ("borrar".equals(redirecion)) {
-                    response.sendRedirect("usuario/eliminar.jsp");
-                } else if ("modificar".equals(redirecion)) {
-                    response.sendRedirect("usuario/modificar.jsp");
-                } else {
-                    response.sendRedirect("usuario/buscar.jsp");
+
+            switch (accion) {
+                case "agregar": {
+                    crudUsuario.getAlguien().setId(request.getParameter("id"));
+                    crudUsuario.getAlguien().setClave(request.getParameter("clave"));
+                    crudUsuario.getAlguien().setNombre(request.getParameter("nombre"));
+                    crudUsuario.getAlguien().setRol(request.getParameter("rol"));
+                    crudUsuario.agregarUsuario();
+
+                    String msg = URLEncoder.encode("Usuario " + request.getParameter("id") + " agregado exitosamente.", StandardCharsets.UTF_8);
+                    response.sendRedirect(contextPath + "/usuario/agregar.jsp?mensaje=" + msg);
+                    break;
                 }
-            } else if ("modificar".equals(accion)) {
-                crudUsuario.getAlguien().setId(request.getParameter("id"));
-                crudUsuario.getAlguien().setClave(request.getParameter("clave"));
-                crudUsuario.getAlguien().setNombre(request.getParameter("nombre"));
-                crudUsuario.getAlguien().setRol(request.getParameter("rol"));
-                crudUsuario.modificarUsuario();
-                response.sendRedirect("usuario/modificar.jsp?mensaje=Usuario " + request.getParameter("id") + " Modificado en el sistema");
-            } else if ("eliminar".equals(accion)) {
-                crudUsuario.getAlguien().setId(request.getParameter("id"));
-                crudUsuario.eliminarUsuario();
-                response.sendRedirect("usuario/eliminar.jsp?mensaje=Usuario " + request.getParameter("id") + " Eliminado del sistema");
-            } else if ("listartodo".equals(accion)) {
-                Usuario[] listado = crudUsuario.listarTodosLosusuarios();
-                request.getSession().setAttribute("usuario.listar", listado);
-                response.sendRedirect("usuario/listar.jsp");
-            } else if ("login".equals(accion)) {
-                Usuario alguien = crudUsuario.iniciarSesion(request.getParameter("id"), request.getParameter("clave"));
-                request.getSession().setAttribute("usuario.login", alguien);
-                response.sendRedirect("index.jsp?mensaje=Bienvenido al Sistema");
-            } else if ("salir".equals(accion)) {
-                request.getSession().setAttribute("usuario.login", null);
-                request.getSession().invalidate();
-                response.sendRedirect("index.jsp?mensaje=Sesion Cerrada");
-            } else {
-                response.sendRedirect("usuario/mensaje.jsp?mensaje=La Accion Solicitada no es Correcta");
+
+                case "buscar": {
+                    String id = request.getParameter("id");
+                    Usuario usuario = crudUsuario.consultarUsuario(id);
+                    sesion.setAttribute("usuario.buscar", usuario);
+
+                    String redireccion = request.getParameter("redirecion");
+                    if ("borrar".equalsIgnoreCase(redireccion)) {
+                        response.sendRedirect(contextPath + "/usuario/eliminar.jsp");
+                    } else if ("modificar".equalsIgnoreCase(redireccion)) {
+                        response.sendRedirect(contextPath + "/usuario/modificar.jsp");
+                    } else {
+                        response.sendRedirect(contextPath + "/usuario/buscar.jsp");
+                    }
+                    break;
+                }
+
+                case "modificar": {
+                    crudUsuario.getAlguien().setId(request.getParameter("id"));
+                    crudUsuario.getAlguien().setClave(request.getParameter("clave"));
+                    crudUsuario.getAlguien().setNombre(request.getParameter("nombre"));
+                    crudUsuario.getAlguien().setRol(request.getParameter("rol"));
+                    crudUsuario.modificarUsuario();
+
+                    String msg = URLEncoder.encode("Usuario " + request.getParameter("id") + " modificado exitosamente.", StandardCharsets.UTF_8);
+                    response.sendRedirect(contextPath + "/usuario/modificar.jsp?mensaje=" + msg);
+                    break;
+                }
+
+                case "eliminar": {
+                    crudUsuario.getAlguien().setId(request.getParameter("id"));
+                    crudUsuario.eliminarUsuario();
+
+                    String msg = URLEncoder.encode("Usuario " + request.getParameter("id") + " eliminado del sistema.", StandardCharsets.UTF_8);
+                    response.sendRedirect(contextPath + "/usuario/eliminar.jsp?mensaje=" + msg);
+                    break;
+                }
+
+                case "listartodo": {
+                    Usuario[] listado = crudUsuario.listarTodosLosusuarios();
+                    sesion.setAttribute("usuario.listar", listado);
+                    response.sendRedirect(contextPath + "/usuario/listar.jsp");
+                    break;
+                }
+
+                case "login": {
+                    String id = request.getParameter("id");
+                    String clave = request.getParameter("clave");
+                    Usuario usuarioAutenticado = crudUsuario.iniciarSesion(id, clave);
+
+                    sesion.setAttribute("usuario.login", usuarioAutenticado);
+                    String msg = URLEncoder.encode("Bienvenido al Sistema, " + usuarioAutenticado.getNombre(), StandardCharsets.UTF_8);
+                    response.sendRedirect(contextPath + "/index.jsp?mensaje=" + msg);
+                    break;
+                }
+
+                case "salir": {
+                    sesion.removeAttribute("usuario.login");
+                    sesion.invalidate();
+                    String msg = URLEncoder.encode("Sesión cerrada correctamente.", StandardCharsets.UTF_8);
+                    response.sendRedirect(contextPath + "/usuario/login.jsp?mensaje=" + msg);
+                    break;
+                }
+
+                case "recuperar": {
+                    String id = request.getParameter("id");
+                    String email = request.getParameter("email");
+                    String msg = URLEncoder.encode("Solicitud recibida para el usuario " + id + ". Función de correo en desarrollo.", StandardCharsets.UTF_8);
+                    response.sendRedirect(contextPath + "/usuario/recuperar-contrasena.jsp?mensaje=" + msg);
+                    break;
+                }
+
+                default: {
+                    String msg = URLEncoder.encode("La acción solicitada no es válida: " + accion, StandardCharsets.UTF_8);
+                    response.sendRedirect(contextPath + "/usuario/mensaje.jsp?mensaje=" + msg);
+                    break;
+                }
             }
         } catch (Exception e) {
-            response.sendRedirect("usuario/mensaje.jsp?mensaje=Error: " + e.getMessage());
-        } finally {
-            out.close();
+            String msgError = URLEncoder.encode("Error: " + e.getMessage(), StandardCharsets.UTF_8);
+            response.sendRedirect(contextPath + "/usuario/mensaje.jsp?mensaje=" + msgError);
         }
     }
 
@@ -83,6 +144,6 @@ public class ServletUsuario extends HttpServlet {
 
     @Override
     public String getServletInfo() {
-        return "Short description";
+        return "Servlet Controlador para la entidad Usuario";
     }
 }
