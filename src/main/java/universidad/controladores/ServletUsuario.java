@@ -113,7 +113,8 @@ public class ServletUsuario extends HttpServlet {
                 case "recuperar": {
                     String id = request.getParameter("id");
                     String email = request.getParameter("email");
-                    String msg = URLEncoder.encode("Solicitud recibida para el usuario " + id + ". Función de correo en desarrollo.", StandardCharsets.UTF_8);
+                    crudUsuario.recuperarContrasena(id, email);
+                    String msg = URLEncoder.encode("Solicitud recibida para el usuario " + id + " con correo " + email, StandardCharsets.UTF_8);
                     response.sendRedirect(contextPath + "/usuario/recuperar-contrasena.jsp?mensaje=" + msg);
                     break;
                 }
