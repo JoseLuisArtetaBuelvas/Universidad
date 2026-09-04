@@ -27,12 +27,14 @@
                 <strong>Módulo Usuarios</strong>
                 <a href="<%= request.getContextPath()%>/usuario/agregar">Crear Usuario</a>
                 <a href="<%= request.getContextPath()%>/usuario/buscar">Buscar Usuarios</a>
+                <a href="<%= request.getContextPath()%>/usuario/modificar">Modificar Usuario</a>
                 <a href="<%= request.getContextPath()%>/usuario?accion=listarTodo">Listar Usuarios</a>
             </li>
             <li>
                 <strong>Módulo Universidades</strong>
                 <a href="<%= request.getContextPath()%>/universidad/agregar">Crear Universidad</a>
                 <a href="<%= request.getContextPath()%>/universidad/buscar">Buscar Universidades</a>
+                <a href="<%= request.getContextPath()%>/universidad/modificar">Modificar Universidad</a>
                 <a href="<%= request.getContextPath()%>/universidad?accion=listarTodo">Listar Universidades</a>
             </li>
         </ul>
