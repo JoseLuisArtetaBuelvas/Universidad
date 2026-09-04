@@ -264,4 +264,27 @@ public class CRUDUsuario {
             }
         }
     }
+
+    //Recuperar contraseña
+    public void recuperarContrasena(String id, String email) throws Exception {
+        if (id == null || id.trim().isEmpty() || email == null || email.trim().isEmpty()) {
+            throw new Exception("El ID y el correo electrónico son necesarios");
+        }
+
+        Usuario usuario = consultarUsuario(id).trim();
+        if(usuario == null) {
+            throw new Exception("No existe el usuario con el ID: " + id);
+        }
+
+        //Diseño del correo electrónico
+        String asunto = "Recuperación de Contraseña - Sistema Universidad";                                                                                                                           
+        String cuerpoHtml = "<h2>Recuperación de Credenciales</h2>"                                                                                                                                   
+                + "<p>Hola <strong>" + usuario.getNombre() + "</strong>,</p>"                                                                                                                         
+                + "<p>Hemos recibido una solicitud para recuperar tu contraseña de acceso.</p>"                                                                                                       
+                + "<p>Tu contraseña actual es: <strong style='color:blue; font-size:16px;'>" + usuario.getClave() + "</strong></p>"                                                                   
+                + "<p>Te sugerimos cambiarla una vez inicies sesión en el sistema.</p>"                                                                                                               
+                + "<br><hr><small>Este correo fue generado automáticamente por el Sistema Universidad.</small>";     
+
+        ServicioCorreo.enviarCorreo(email, asunto, cuerpoHtml);
+    }
 }
