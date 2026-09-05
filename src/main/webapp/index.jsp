@@ -167,6 +167,7 @@
                     <li><a href="<%= request.getContextPath()%>/universidad/modificar.jsp">✏️ Modificar Universidad</a></li>
                     <li><a href="<%= request.getContextPath()%>/universidad/eliminar.jsp">🗑️ Eliminar Universidad</a></li>
                     <li><a href="<%= request.getContextPath()%>/universidad?accion=listartodo">📋 Listar Universidades</a></li>
+                    <li><a href="<%= request.getContextPath()%>/universidad/reportes.jsp">📊 Reportes Parametrizados</a></li>
                 </ul>
             </div>
         </main>
