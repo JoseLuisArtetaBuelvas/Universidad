@@ -6,6 +6,7 @@
         response.sendRedirect(request.getContextPath() + "/usuario/login.jsp");
         return;
     }
+    Usuario usuarioEliminar = (Usuario) session.getAttribute("usuario.buscar");
 %>
 <!DOCTYPE html>
 <html lang="es">

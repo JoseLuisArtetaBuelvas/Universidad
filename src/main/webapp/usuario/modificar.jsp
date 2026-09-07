@@ -6,6 +6,7 @@
         response.sendRedirect(request.getContextPath() + "/usuario/login.jsp");
         return;
     }
+    Usuario usuarioModificar = (Usuario) session.getAttribute("usuario.buscar");
 %>
 <!DOCTYPE html>
 <html lang="es">
