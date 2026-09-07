@@ -39,6 +39,7 @@ public class ServletUsuario extends HttpServlet {
                     crudUsuario.getAlguien().setId(request.getParameter("id"));
                     crudUsuario.getAlguien().setClave(request.getParameter("clave"));
                     crudUsuario.getAlguien().setNombre(request.getParameter("nombre"));
+                    crudUsuario.getAlguien().setEmail(request.getParameter("email"));
                     crudUsuario.getAlguien().setRol(request.getParameter("rol"));
                     crudUsuario.agregarUsuario();
 
