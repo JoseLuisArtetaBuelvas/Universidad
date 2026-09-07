@@ -186,6 +186,11 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="email">Correo Electrónico:</label>
+                    <input type="email" id="email" name="email" placeholder="ejemplo@universidad.edu" required>
+                </div>
+
+                <div class="form-group">
                     <label for="rol">Rol:</label>
                     <select id="rol" name="rol" required>
                         <option value="">-- Seleccione un rol --</option>

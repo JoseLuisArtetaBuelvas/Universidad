@@ -47,8 +47,8 @@ public class CRUDUsuario {
 
         //Armar SQL Insert de forma dinámica
         String sqlInsert = "INSERT INTO usuarios "
-                + "(id, clave, nombre, rol) "
-                + "VALUES(?,?,?,?)";
+                + "(id, clave, nombre, rol, email) "
+                + "VALUES(?,?,?,?,?)";
 
         try {
             //Crear una sentencia JDBC mediante la sentencia SQL anterior
@@ -58,7 +58,8 @@ public class CRUDUsuario {
             sentenciaSQL.setString(2, alguien.getClave());
             sentenciaSQL.setString(3, alguien.getNombre());
             sentenciaSQL.setString(4, alguien.getRol());
-
+            sentenciaSQL.setString(5, alguien.getEmail());
+            
             //Actualizar la BD usando la sentenciaSQL con los datos del usuario
 
             baseDatos.actualizar(sentenciaSQL);

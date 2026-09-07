@@ -5,6 +5,7 @@ public class Usuario {
     private String id;
     private String clave;
     private String nombre;
+    private String email;
     private String rol;
 
 
@@ -19,6 +20,10 @@ public class Usuario {
 
     public String getNombre() {
         return nombre;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public String getRol() {
@@ -37,6 +42,10 @@ public class Usuario {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void setRol(String rol) {
