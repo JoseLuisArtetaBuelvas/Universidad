@@ -334,4 +334,86 @@ public class CRUDUsuario {
 
         ServicioCorreo.enviarCorreo(email, asunto, cuerpoHtml);
     }
+
+    // 1. Reporte: Listar usuarios por rol
+    public Usuario[] listarPorRol(String rol) throws Exception {
+        if (rol == null || rol.trim().isEmpty()) {
+            throw new Exception("El rol es requerido para el reporte");
+        }
+
+        ConexionBaseDatos bd = null;
+        String sqlSelect = "SELECT * FROM usuarios WHERE LOWER(rol) = LOWER(?) ORDER BY id";
+
+        try {
+            bd = new ConexionBaseDatos();
+            PreparedStatement sentenciaSQL = bd.crearSentencia(sqlSelect);
+            sentenciaSQL.setString(1, rol.trim());
+            ResultSet resultado = bd.consultar(sentenciaSQL);
+
+            resultado.last();
+            Usuario[] listado = new Usuario[resultado.getRow()];
+            resultado.beforeFirst();
+
+            while (resultado.next()) {
+                listado[resultado.getRow() - 1] = mapearUsuario(resultado);
+            }
+            return listado;
+        } catch (Exception e) {
+            throw new Exception("Error al generar reporte por rol: " + e.getMessage());
+        } finally {
+            if (bd != null) {
+                bd.desconectar();
+            }
+        }
+    }
+
+    // 2. Reporte: Listar usuarios por rol y coincidencia en nombre o correo
+    public Usuario[] listarPorRolYNombre(String rol, String criterio) throws Exception {
+        if (rol == null || rol.trim().isEmpty()) {
+            throw new Exception("El rol es requerido para el reporte");
+        }
+        if (criterio == null) {
+            criterio = "";
+        }
+
+        ConexionBaseDatos bd = null;
+        String sqlSelect = "SELECT * FROM usuarios WHERE LOWER(rol) = LOWER(?) AND (LOWER(nombre) LIKE LOWER(?) OR LOWER(email) LIKE LOWER(?)) ORDER BY id";
+
+        try {
+            bd = new ConexionBaseDatos();
+            PreparedStatement sentenciaSQL = bd.crearSentencia(sqlSelect);
+            sentenciaSQL.setString(1, rol.trim());
+            sentenciaSQL.setString(2, "%" + criterio.trim() + "%");
+            sentenciaSQL.setString(3, "%" + criterio.trim() + "%");
+            ResultSet resultado = bd.consultar(sentenciaSQL);
+
+            resultado.last();
+            Usuario[] listado = new Usuario[resultado.getRow()];
+            resultado.beforeFirst();
+
+            while (resultado.next()) {
+                listado[resultado.getRow() - 1] = mapearUsuario(resultado);
+            }
+            return listado;
+        } catch (Exception e) {
+            throw new Exception("Error al generar reporte por rol y coincidencia: " + e.getMessage());
+        } finally {
+            if (bd != null) {
+                bd.desconectar();
+            }
+        }
+    }
+
+    // Método auxiliar para mapear ResultSet a Usuario
+    private Usuario mapearUsuario(ResultSet rs) throws Exception {
+        Usuario user = new Usuario();
+        user.setId(String.valueOf(rs.getInt("id")));
+        user.setClave(rs.getString("clave"));
+        user.setNombre(rs.getString("nombre"));
+        user.setRol(rs.getString("rol"));
+        try {
+            user.setEmail(rs.getString("email"));
+        } catch (Exception ignored) {}
+        return user;
+    }
 }

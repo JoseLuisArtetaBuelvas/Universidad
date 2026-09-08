@@ -155,6 +155,7 @@
                     <li><a href="<%= request.getContextPath()%>/usuario/modificar.jsp">✏️ Modificar Usuario</a></li>
                     <li><a href="<%= request.getContextPath()%>/usuario/eliminar.jsp">🗑️ Eliminar Usuario</a></li>
                     <li><a href="<%= request.getContextPath()%>/usuario?accion=listartodo">📋 Listar Todos los Usuarios</a></li>
+                    <li><a href="<%= request.getContextPath()%>/usuario/reportes.jsp">📊 Reportes Parametrizados</a></li>
                 </ul>
             </div>
 
