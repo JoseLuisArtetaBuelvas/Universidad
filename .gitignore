@@ -41,3 +41,5 @@ build/
 # Markdown
 *.md
 *.MD
+!README.md
+!**/README.md
