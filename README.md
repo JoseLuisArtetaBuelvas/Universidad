@@ -10,7 +10,7 @@ Este proyecto corresponde a la actividad académica de desarrollo web para la ge
 
 Antes de ejecutar el proyecto, asegúrate de contar con el siguiente software instalado y configurado en tu entorno:
 
-* **Java Development Kit (JDK):** Versión 17, 21 o 24 (compatible con Jakarta EE).
+* **Java Development Kit (JDK):** Versión 21 LTS (soporte estándar a largo plazo en producción y contenedores).
 * **Servidor de Aplicaciones:** [Apache Tomcat 10.1.x](https://tomcat.apache.org/download-10.cgi) o superior (indispensable para soporte de la especificación `jakarta.*`).
 * **Gestor de Construcción:** [Apache Maven 3.8+](https://maven.apache.org/) (el proyecto incluye también los wrappers `mvnw` y `mvnw.cmd`).
 * **Motor de Base de Datos:** [PostgreSQL 14+](https://www.postgresql.org/) (instalación local) o un servicio PostgreSQL en la nube ([Supabase](https://supabase.com/), [Neon.tech](https://neon.tech/), AWS RDS, etc.).
@@ -147,14 +147,22 @@ Al desplegar en plataformas PaaS/IaaS como **Render**, **Railway**, **Docker** o
 3. Copia dicho archivo `.war` a la carpeta `webapps/` de tu servidor Tomcat:
    ```bash
    cp target/Universidad-1.0-SNAPSHOT.war /ruta/a/tomcat/webapps/Universidad.war
+### Método 3: Despliegue con Docker y Tomcat (Recomendado para la Nube)
+El proyecto incluye un [`Dockerfile`](./Dockerfile) multi-etapa optimizado que compila con Maven y despliega en Tomcat 10.1 con Java 21:
+
+1. **Construir la imagen Docker:**
+   ```bash
+   docker build -t universidad-web .
    ```
-4. Inicia Apache Tomcat ejecutando:
-   * Windows: `/ruta/a/tomcat/bin/startup.bat`
-   * Linux/macOS: `/ruta/a/tomcat/bin/startup.sh`
-5. Accede desde tu navegador a:
+2. **Ejecutar el contenedor vinculando tus variables de entorno:**
+   ```bash
+   docker run -d -p 8080:8080 --env-file .env --name universidad-app universidad-web
    ```
-   http://localhost:8080/Universidad/
+3. **Acceso directo en la raíz:**
    ```
+   http://localhost:8080/
+   ```
+*(En plataformas en la nube como Render o Railway, solo conectas el repositorio de GitHub y el servicio detectará el `Dockerfile` automáticamente).*
 
 ---
 
@@ -164,6 +172,9 @@ El proyecto sigue una arquitectura **MVC** organizada de la siguiente manera:
 
 ```text
 Universidad/
+├── .env.example                # Plantilla pública de variables de entorno
+├── .dockerignore               # Archivos excluidos del contexto Docker
+├── Dockerfile                  # Construcción multi-stage (Maven 3.9 + Tomcat 10.1 JDK 21)
 ├── database/                   # Scripts SQL (DDL, DML y unificado)
 │   ├── 01_crear_tablas.sql
 │   ├── 02_datos_iniciales.sql
@@ -173,15 +184,16 @@ Universidad/
 │   ├── main/
 │   │   ├── java/
 │   │   │   └── universidad/
+│   │   │       ├── config/         # EnvConfig (lector dinámico de .env y variables)
 │   │   │       ├── controladores/  # Servlets controladores (ServletUsuario, ServletUniversidad)
-│   │   │       ├── modelo/         # Clases de entidad (Usuario, Universidad) y DAOs (CRUDUsuario, CRUDUniversidad, ConexionBaseDatos)
-│   │   │       └── servicios/      # ServicioCorreo (envío de correos HTML vía Jakarta Mail)
+│   │   │       ├── modelo/         # Entidades (Usuario, Universidad) y DAOs (CRUD, ConexionBaseDatos)
+│   │   │       └── servicios/      # ServicioCorreo (Jakarta Mail con SMTP dinámico)
 │   │   └── webapp/
 │   │       ├── index.jsp           # Panel principal de la aplicación
-│   │       ├── universidad/        # Vistas JSP del módulo Universidad (agregar, buscar, modificar, eliminar, listar, reportes)
-│   │       └── usuario/            # Vistas JSP del módulo Usuario (login, recuperar, agregar, buscar, modificar, eliminar, listar, reportes)
-├── pom.xml                     # Configuración de dependencias y plugins Maven
-└── README.md                   # Documentación general del proyecto
+│   │       ├── universidad/        # Vistas JSP del módulo Universidad
+│   │       └── usuario/            # Vistas JSP del módulo Usuario
+├── pom.xml                     # Configuración de dependencias (Java 21 LTS)
+└── README.md                   # Documentación integral del proyecto
 ```
 
 ### Funcionalidades Implementadas:
