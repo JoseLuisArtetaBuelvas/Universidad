@@ -69,20 +69,33 @@ Para ingresar al sistema una vez desplegado o ejecutado en local, utiliza el **U
 
 ## ⚙️ Variables de Entorno y Configuración (.env)
 
-Para proteger las credenciales sensibles y facilitar el despliegue tanto en local como en la nube (Render, Railway, AWS, Supabase, Neon), la aplicación soporta variables de entorno mediante la clase [`EnvConfig.java`](./src/main/java/universidad/config/EnvConfig.java).
+Para proteger las credenciales sensibles y facilitar el despliegue tanto en local como en la nube (Render, Railway, AWS, Supabase, Neon), la aplicación desacopla las credenciales mediante la clase de utilidad [`EnvConfig.java`](./src/main/java/universidad/config/EnvConfig.java).
 
-### 1. Archivo `.env` (Desarrollo Local)
-El repositorio incluye una plantilla [` .env.example `](./.env.example). Para trabajar localmente:
+### 1. ¿Qué pasa con las variables locales en `ConexionBaseDatos.java`? (Mecanismo de Respaldo / *Fallback*)
+En la clase [`ConexionBaseDatos.java`](./src/main/java/universidad/modelo/ConexionBaseDatos.java) se conservan las variables locales originales (`localhost`, `5432`, `postgres`, `admin`). Esto responde a un patrón de diseño intencional:
+* **Compatibilidad Total hacia Atrás:** Si clonas el proyecto y lo ejecutas localmente sin crear un archivo `.env` ni configurar variables del sistema, la aplicación sigue funcionando de inmediato con los valores estándar de desarrollo local.
+* **Sobrescritura Dinámica en Memoria:** Al instanciar la conexión, el método `cargarConfiguracionDesdeEntorno()` consulta a `EnvConfig`. Si detecta variables de entorno (en la nube) o un archivo `.env` (en local), **reemplaza en memoria** estos valores sin modificar el código fuente.
+* **Cero Riesgo en Internet:** Las variables escritas en el código corresponden únicamente al entorno local de desarrollo (`localhost`). Las contraseñas reales y privadas de bases de datos en producción (como Supabase o AWS RDS) jamás se escriben en el código fuente, sino que se suministran externamente.
+
+### 2. Orden de Precedencia de la Configuración
+La clase `EnvConfig` evalúa las configuraciones en el siguiente orden:
+1. **Variables de Entorno del Sistema (`System.getenv`):** Máxima prioridad. Utilizadas por plataformas como Render, Railway, Docker o AWS.
+2. **Propiedades de Java (`System.getProperty`):** Pasadas por línea de comandos (ej. `-DDB_HOST=...`).
+3. **Archivo Local `.env`:** Leído automáticamente si existe en la raíz del proyecto o en el servidor Tomcat.
+4. **Valores por Defecto (*Fallback*):** Los valores locales originales definidos en el código Java.
+
+### 3. Archivo `.env` (Desarrollo Local)
+El repositorio incluye una plantilla [` .env.example `](./.env.example). Para configurar tu propio entorno local o apuntar a una base de datos remota sin modificar código Java:
 1. Copia `.env.example` y nómbralo `.env`:
    ```bash
    cp .env.example .env
    ```
-2. *(Opcional)* Modifica los valores según tu configuración local. Si no creas el archivo `.env`, el sistema usará los valores de respaldo predeterminados.
-3. El archivo `.env` está en `.gitignore` para proteger tus claves y contraseñas de accesos públicos.
+2. Modifica los valores según corresponda.
+3. El archivo `.env` está registrado en `.gitignore` para garantizar que tus credenciales nunca se suban al repositorio público de GitHub.
 
-### 2. Tabla de Variables Disponibles
+### 4. Tabla de Variables Disponibles
 
-| Variable | Descripción | Valor por Defecto Local | Ejemplo en la Nube |
+| Variable | Descripción | Valor por Defecto Local (Fallback) | Ejemplo en la Nube |
 | :--- | :--- | :--- | :--- |
 | `DB_DRIVER` | Driver JDBC de base de datos | `org.postgresql.Driver` | `org.postgresql.Driver` |
 | `DB_HOST` | Host / Servidor de BD | `localhost` | `aws-0-sa-east-1.pooler.supabase.com` |
@@ -96,8 +109,8 @@ El repositorio incluye una plantilla [` .env.example `](./.env.example). Para tr
 | `MAIL_USER` | Correo emisor para restablecer claves | `josex.developer@gmail.com` | `tu_correo@gmail.com` |
 | `MAIL_PASSWORD` | Clave de aplicación de Google | `yyss bqhm knnv cdrg` | `xxxx xxxx xxxx xxxx` |
 
-### 3. Configuración para Despliegue en la Nube
-Al desplegar en plataformas PaaS/IaaS como **Render**, **Railway**, **Docker** o **AWS**, no necesitas subir el archivo `.env`. Simplemente define estas mismas variables en la sección **Environment Variables** del panel de control de tu proveedor.
+### 5. Configuración para Despliegue en la Nube
+Al desplegar en plataformas PaaS/IaaS como **Render**, **Railway**, **Docker** o **AWS**, no se sube el archivo `.env`. Simplemente define estas variables en la sección **Environment Variables** del panel de control de tu proveedor de hosting.
 
 ---
 
