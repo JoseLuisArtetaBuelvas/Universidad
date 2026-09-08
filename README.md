@@ -67,28 +67,50 @@ Para ingresar al sistema una vez desplegado o ejecutado en local, utiliza el **U
 
 ---
 
-## ⚙️ Variables y Parámetros de Configuración
+## ⚙️ Variables de Entorno y Configuración (.env)
 
-### 1. Conexión a Base de Datos
-Ubicación: [`src/main/java/universidad/modelo/ConexionBaseDatos.java`](./src/main/java/universidad/modelo/ConexionBaseDatos.java)
-```java
-protected String driver = "org.postgresql.Driver";
-protected String nombreIPServidorBD = "localhost";
-protected String url = "jdbc:postgresql://";
-protected int puertoServidorBD = 5432;
-protected String usuarioBD = "postgres";
-protected String passwordUsuarioBD = "admin";
-protected String nombreBD = "7502523005_2_Universidad";
-```
-*Si utilizas un servicio en la nube como Supabase, reemplaza `nombreIPServidorBD`, `usuarioBD`, `passwordUsuarioBD` y el nombre de la BD por los datos proporcionados por tu proveedor.*
+Para proteger las credenciales sensibles y facilitar el despliegue tanto en local como en la nube (Render, Railway, AWS, Supabase, Neon), la aplicación desacopla las credenciales mediante la clase de utilidad [`EnvConfig.java`](./src/main/java/universidad/config/EnvConfig.java).
 
-### 2. Servicio de Correo Electrónico (Recuperación de Contraseñas)
-Ubicación: [`src/main/java/universidad/servicios/ServicioCorreo.java`](./src/main/java/universidad/servicios/ServicioCorreo.java)
-* **Protocolo:** SMTP (TLS puerto 587 con autenticación).
-* **Host:** `smtp.gmail.com`
-* **Credenciales requeridas:**
-  * `REMITENTE`: Dirección de correo Gmail emisora.
-  * `CLAVE_APLICACION`: Contraseña de aplicación de 16 dígitos generada en la configuración de seguridad de la cuenta de Google.
+### 1. ¿Qué pasa con las variables locales en `ConexionBaseDatos.java`? (Mecanismo de Respaldo / *Fallback*)
+En la clase [`ConexionBaseDatos.java`](./src/main/java/universidad/modelo/ConexionBaseDatos.java) se conservan las variables locales originales (`localhost`, `5432`, `postgres`, `admin`). Esto responde a un patrón de diseño intencional:
+* **Compatibilidad Total hacia Atrás:** Si clonas el proyecto y lo ejecutas localmente sin crear un archivo `.env` ni configurar variables del sistema, la aplicación sigue funcionando de inmediato con los valores estándar de desarrollo local.
+* **Sobrescritura Dinámica en Memoria:** Al instanciar la conexión, el método `cargarConfiguracionDesdeEntorno()` consulta a `EnvConfig`. Si detecta variables de entorno (en la nube) o un archivo `.env` (en local), **reemplaza en memoria** estos valores sin modificar el código fuente.
+* **Cero Riesgo en Internet:** Las variables escritas en el código corresponden únicamente al entorno local de desarrollo (`localhost`). Las contraseñas reales y privadas de bases de datos en producción (como Supabase o AWS RDS) jamás se escriben en el código fuente, sino que se suministran externamente.
+
+### 2. Orden de Precedencia de la Configuración
+La clase `EnvConfig` evalúa las configuraciones en el siguiente orden:
+1. **Variables de Entorno del Sistema (`System.getenv`):** Máxima prioridad. Utilizadas por plataformas como Render, Railway, Docker o AWS.
+2. **Propiedades de Java (`System.getProperty`):** Pasadas por línea de comandos (ej. `-DDB_HOST=...`).
+3. **Archivo Local `.env`:** Leído automáticamente si existe en la raíz del proyecto o en el servidor Tomcat.
+4. **Valores por Defecto (*Fallback*):** Los valores locales originales definidos en el código Java.
+
+### 3. Archivo `.env` (Desarrollo Local)
+El repositorio incluye una plantilla [` .env.example `](./.env.example). Para configurar tu propio entorno local o apuntar a una base de datos remota sin modificar código Java:
+1. Copia `.env.example` y nómbralo `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+2. Modifica los valores según corresponda.
+3. El archivo `.env` está registrado en `.gitignore` para garantizar que tus credenciales nunca se suban al repositorio público de GitHub.
+
+### 4. Tabla de Variables Disponibles
+
+| Variable | Descripción | Valor por Defecto Local (Fallback) | Ejemplo en la Nube |
+| :--- | :--- | :--- | :--- |
+| `DB_DRIVER` | Driver JDBC de base de datos | `org.postgresql.Driver` | `org.postgresql.Driver` |
+| `DB_HOST` | Host / Servidor de BD | `localhost` | `aws-0-sa-east-1.pooler.supabase.com` |
+| `DB_PORT` | Puerto de conexión a la BD | `5432` | `5432` / `6543` |
+| `DB_NAME` | Nombre de la base de datos | `7502523005_2_Universidad` | `postgres` |
+| `DB_USER` | Usuario de la base de datos | `postgres` | `postgres.tu_id_proyecto` |
+| `DB_PASSWORD` | Contraseña del usuario de BD | `admin` | `TuPasswordSeguro123` |
+| `DB_URL` | *(Opcional)* URL completa JDBC | *(Generada dinámicamente)* | `jdbc:postgresql://...` |
+| `MAIL_HOST` | Servidor SMTP de correo | `smtp.gmail.com` | `smtp.gmail.com` |
+| `MAIL_PORT` | Puerto SMTP con TLS | `587` | `587` |
+| `MAIL_USER` | Correo emisor para restablecer claves | `josex.developer@gmail.com` | `tu_correo@gmail.com` |
+| `MAIL_PASSWORD` | Clave de aplicación de Google | `yyss bqhm knnv cdrg` | `xxxx xxxx xxxx xxxx` |
+
+### 5. Configuración para Despliegue en la Nube
+Al desplegar en plataformas PaaS/IaaS como **Render**, **Railway**, **Docker** o **AWS**, no se sube el archivo `.env`. Simplemente define estas variables en la sección **Environment Variables** del panel de control de tu proveedor de hosting.
 
 ---
 
