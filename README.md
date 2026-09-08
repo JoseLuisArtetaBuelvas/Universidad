@@ -67,28 +67,37 @@ Para ingresar al sistema una vez desplegado o ejecutado en local, utiliza el **U
 
 ---
 
-## ⚙️ Variables y Parámetros de Configuración
+## ⚙️ Variables de Entorno y Configuración (.env)
 
-### 1. Conexión a Base de Datos
-Ubicación: [`src/main/java/universidad/modelo/ConexionBaseDatos.java`](./src/main/java/universidad/modelo/ConexionBaseDatos.java)
-```java
-protected String driver = "org.postgresql.Driver";
-protected String nombreIPServidorBD = "localhost";
-protected String url = "jdbc:postgresql://";
-protected int puertoServidorBD = 5432;
-protected String usuarioBD = "postgres";
-protected String passwordUsuarioBD = "admin";
-protected String nombreBD = "7502523005_2_Universidad";
-```
-*Si utilizas un servicio en la nube como Supabase, reemplaza `nombreIPServidorBD`, `usuarioBD`, `passwordUsuarioBD` y el nombre de la BD por los datos proporcionados por tu proveedor.*
+Para proteger las credenciales sensibles y facilitar el despliegue tanto en local como en la nube (Render, Railway, AWS, Supabase, Neon), la aplicación soporta variables de entorno mediante la clase [`EnvConfig.java`](./src/main/java/universidad/config/EnvConfig.java).
 
-### 2. Servicio de Correo Electrónico (Recuperación de Contraseñas)
-Ubicación: [`src/main/java/universidad/servicios/ServicioCorreo.java`](./src/main/java/universidad/servicios/ServicioCorreo.java)
-* **Protocolo:** SMTP (TLS puerto 587 con autenticación).
-* **Host:** `smtp.gmail.com`
-* **Credenciales requeridas:**
-  * `REMITENTE`: Dirección de correo Gmail emisora.
-  * `CLAVE_APLICACION`: Contraseña de aplicación de 16 dígitos generada en la configuración de seguridad de la cuenta de Google.
+### 1. Archivo `.env` (Desarrollo Local)
+El repositorio incluye una plantilla [` .env.example `](./.env.example). Para trabajar localmente:
+1. Copia `.env.example` y nómbralo `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+2. *(Opcional)* Modifica los valores según tu configuración local. Si no creas el archivo `.env`, el sistema usará los valores de respaldo predeterminados.
+3. El archivo `.env` está en `.gitignore` para proteger tus claves y contraseñas de accesos públicos.
+
+### 2. Tabla de Variables Disponibles
+
+| Variable | Descripción | Valor por Defecto Local | Ejemplo en la Nube |
+| :--- | :--- | :--- | :--- |
+| `DB_DRIVER` | Driver JDBC de base de datos | `org.postgresql.Driver` | `org.postgresql.Driver` |
+| `DB_HOST` | Host / Servidor de BD | `localhost` | `aws-0-sa-east-1.pooler.supabase.com` |
+| `DB_PORT` | Puerto de conexión a la BD | `5432` | `5432` / `6543` |
+| `DB_NAME` | Nombre de la base de datos | `7502523005_2_Universidad` | `postgres` |
+| `DB_USER` | Usuario de la base de datos | `postgres` | `postgres.tu_id_proyecto` |
+| `DB_PASSWORD` | Contraseña del usuario de BD | `admin` | `TuPasswordSeguro123` |
+| `DB_URL` | *(Opcional)* URL completa JDBC | *(Generada dinámicamente)* | `jdbc:postgresql://...` |
+| `MAIL_HOST` | Servidor SMTP de correo | `smtp.gmail.com` | `smtp.gmail.com` |
+| `MAIL_PORT` | Puerto SMTP con TLS | `587` | `587` |
+| `MAIL_USER` | Correo emisor para restablecer claves | `josex.developer@gmail.com` | `tu_correo@gmail.com` |
+| `MAIL_PASSWORD` | Clave de aplicación de Google | `yyss bqhm knnv cdrg` | `xxxx xxxx xxxx xxxx` |
+
+### 3. Configuración para Despliegue en la Nube
+Al desplegar en plataformas PaaS/IaaS como **Render**, **Railway**, **Docker** o **AWS**, no necesitas subir el archivo `.env`. Simplemente define estas mismas variables en la sección **Environment Variables** del panel de control de tu proveedor.
 
 ---
 

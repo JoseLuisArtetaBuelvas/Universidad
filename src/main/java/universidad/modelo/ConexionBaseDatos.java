@@ -1,6 +1,7 @@
 package universidad.modelo;
 
 import java.sql.*;
+import universidad.config.EnvConfig;
 
 public class ConexionBaseDatos {
 
@@ -15,6 +16,24 @@ public class ConexionBaseDatos {
     private Connection conexion;
     private PreparedStatement sentencia;
     private ResultSet filasConsulta;
+
+    private void cargarConfiguracionDesdeEntorno() {
+        this.driver = EnvConfig.get("DB_DRIVER", this.driver);
+        this.nombreIPServidorBD = EnvConfig.get("DB_HOST", this.nombreIPServidorBD);
+        this.puertoServidorBD = EnvConfig.getInt("DB_PORT", this.puertoServidorBD);
+        this.nombreBD = EnvConfig.get("DB_NAME", this.nombreBD);
+        this.usuarioBD = EnvConfig.get("DB_USER", this.usuarioBD);
+        this.passwordUsuarioBD = EnvConfig.get("DB_PASSWORD", this.passwordUsuarioBD);
+
+        String urlDirecta = EnvConfig.get("DB_URL", EnvConfig.get("DATABASE_URL", null));
+        if (urlDirecta != null && !urlDirecta.trim().isEmpty()) {
+            if (urlDirecta.startsWith("postgresql://")) {
+                this.url = "jdbc:" + urlDirecta;
+            } else {
+                this.url = urlDirecta;
+            }
+        }
+    }
 
     //Setters y Getters
     public Connection getConnection(){
@@ -94,7 +113,10 @@ public class ConexionBaseDatos {
     }
     //Constructores
     public ConexionBaseDatos() throws Exception{
-        url = url+nombreIPServidorBD+":"+puertoServidorBD+"/"+nombreBD;
+        cargarConfiguracionDesdeEntorno();
+        if (this.url == null || this.url.equals("jdbc:postgresql://")) {
+            this.url = "jdbc:postgresql://" + nombreIPServidorBD + ":" + puertoServidorBD + "/" + nombreBD;
+        }
         this.conectar();
     }
 
