@@ -120,6 +120,25 @@ public class ServletUsuario extends HttpServlet {
                     break;
                 }
 
+                case "reporterol": {
+                    String rol = request.getParameter("rol");
+                    Usuario[] reporte = crudUsuario.listarPorRol(rol);
+                    sesion.setAttribute("usuario.reporte", reporte);
+                    sesion.setAttribute("usuario.reporte_titulo", "Reporte de Usuarios con Rol: " + rol);
+                    response.sendRedirect(contextPath + "/usuario/reportes.jsp");
+                    break;
+                }
+
+                case "reportenombre": {
+                    String rol = request.getParameter("rol");
+                    String criterio = request.getParameter("criterio");
+                    Usuario[] reporte = crudUsuario.listarPorRolYNombre(rol, criterio);
+                    sesion.setAttribute("usuario.reporte", reporte);
+                    sesion.setAttribute("usuario.reporte_titulo", "Reporte de Usuarios (" + rol + ") con filtro: \"" + (criterio != null ? criterio : "") + "\"");
+                    response.sendRedirect(contextPath + "/usuario/reportes.jsp");
+                    break;
+                }
+
                 default: {
                     String msg = URLEncoder.encode("La acción solicitada no es válida: " + accion, StandardCharsets.UTF_8);
                     response.sendRedirect(contextPath + "/usuario/mensaje.jsp?mensaje=" + msg);

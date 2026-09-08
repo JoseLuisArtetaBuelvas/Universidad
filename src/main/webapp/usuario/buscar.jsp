@@ -270,7 +270,8 @@
 
             <div class="footer-nav">
                 <a href="${pageContext.request.contextPath}/usuario/agregar.jsp">Agregar Usuario</a> |
-                <a href="${pageContext.request.contextPath}/usuario?accion=listartodo">Listar Usuarios</a>
+                <a href="${pageContext.request.contextPath}/usuario?accion=listartodo">Listar Usuarios</a> |
+                <a href="${pageContext.request.contextPath}/usuario/reportes.jsp">Reportes Parametrizados</a>
             </div>
         </div>
     </div>
