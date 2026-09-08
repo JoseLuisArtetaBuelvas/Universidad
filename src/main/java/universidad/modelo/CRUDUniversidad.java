@@ -43,7 +43,7 @@ public class CRUDUniversidad {
         }
 
         String sqlInsert = "INSERT INTO universidades "
-                + "(id, nombre, categoria, web, rector, email, acceso, telefono, ciudad, numeroCarreras, numSedes) "
+                + "(id, nombre, categoria, web, rector, email, acceso, telefono, ciudad, numeroCarreras, numeroSedes) "
                 + "VALUES(?,?,?,?,?,?,?,?,?,?,?)";
 
         try {
@@ -81,7 +81,7 @@ public class CRUDUniversidad {
         }
 
         String sqlUpdate = "UPDATE universidades "
-                + "SET nombre=?, categoria=?, web=?, rector=?, email=?, acceso=?, telefono=?, ciudad=?, numeroCarreras=?, numSedes=? "
+                + "SET nombre=?, categoria=?, web=?, rector=?, email=?, acceso=?, telefono=?, ciudad=?, numeroCarreras=?, numeroSedes=? "
                 + "WHERE id=?";
 
         try {
@@ -268,7 +268,7 @@ public class CRUDUniversidad {
         uni.setTelefono(rs.getString("telefono"));
         uni.setCiudad(rs.getString("ciudad"));
         uni.setNumeroCarreras(rs.getInt("numeroCarreras"));
-        uni.setNumSedes(rs.getInt("numSedes"));
+        uni.setNumSedes(rs.getInt("numeroSedes"));
         return uni;
     }
 }
