@@ -27,7 +27,7 @@ public class ServicioCorreo {
         mensajeCorreo.setFrom(new InternetAddress(REMITENTE));
         mensajeCorreo.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatario));
         mensajeCorreo.setSubject(asunto);
-        mensajeCorreo.setText(mensaje);
+        mensajeCorreo.setContent(mensaje, "text/html; charset=UTF-8");
 
         Transport.send(mensajeCorreo);
     }

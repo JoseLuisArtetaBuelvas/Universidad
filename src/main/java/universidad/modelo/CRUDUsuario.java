@@ -218,6 +218,9 @@ public class CRUDUsuario {
                 alguien.setClave(resultado.getString("clave"));
                 alguien.setNombre(resultado.getString("nombre"));
                 alguien.setRol(resultado.getString("rol"));
+                try {
+                    alguien.setEmail(resultado.getString("email"));
+                } catch (Exception ignored) {}
                 return alguien;
             } else {
                 throw new Exception("Error al consultar Usuario " + id+ "<br/>Explicacion: Usuario no encontrado");
@@ -268,6 +271,45 @@ public class CRUDUsuario {
         }
     }
 
+    //Obtener contraseña de un usuario
+    public String obtenerContrasena(String id) throws Exception {
+        if (id == null || id.trim().isEmpty()) {
+            throw new Exception("El ID del Usuario es Necesario");
+        }
+        int idNumerico;
+        try {
+            idNumerico = Integer.parseInt(id.trim());
+        } catch (NumberFormatException e) {
+            throw new Exception("El ID del Usuario debe ser un número entero válido");
+        }
+
+        ConexionBaseDatos baseDatos = null;
+        String sqlSelect = "SELECT clave FROM usuarios WHERE id=?";
+
+        try {
+            baseDatos = new ConexionBaseDatos();
+            PreparedStatement sentenciaSQL = baseDatos.crearSentencia(sqlSelect);
+            sentenciaSQL.setInt(1, idNumerico);
+
+            ResultSet resultado = baseDatos.consultar(sentenciaSQL);
+            if (resultado.next()) {
+                return resultado.getString("clave");
+            } else {
+                throw new Exception("Error al obtener la contraseña: No se encontró el usuario con ID " + id);
+            }
+        } catch (Exception e) {
+            throw new Exception("Error al obtener la contraseña: " + e.getMessage());
+        } finally {
+            if (baseDatos != null) {
+                baseDatos.desconectar();
+            }
+        }
+    }
+
+    public String obtenerClave(String id) throws Exception {
+        return obtenerContrasena(id);
+    }
+
     //Recuperar contraseña
     public void recuperarContrasena(String id, String email) throws Exception {
         if (id == null || id.trim().isEmpty() || email == null || email.trim().isEmpty()) {
@@ -275,16 +317,18 @@ public class CRUDUsuario {
         }
 
         Usuario usuario = consultarUsuario(id);
-        if(usuario == null) {
+        if (usuario == null) {
             throw new Exception("No existe el usuario con el ID: " + id);
         }
+
+        String contrasena = obtenerContrasena(id);
 
         //Diseño del correo electrónico
         String asunto = "Recuperación de Contraseña - Sistema Universidad";                                                                                                                           
         String cuerpoHtml = "<h2>Recuperación de Credenciales</h2>"                                                                                                                                   
                 + "<p>Hola <strong>" + usuario.getNombre() + "</strong>,</p>"                                                                                                                         
                 + "<p>Hemos recibido una solicitud para recuperar tu contraseña de acceso.</p>"                                                                                                       
-                + "<p>Tu contraseña actual es: <strong style='color:blue; font-size:16px;'>" + usuario.getClave() + "</strong></p>"                                                                   
+                + "<p>Tu contraseña actual es: <strong style='color:blue; font-size:16px;'>" + contrasena + "</strong></p>"                                                                   
                 + "<p>Te sugerimos cambiarla una vez inicies sesión en el sistema.</p>"                                                                                                               
                 + "<br><hr><small>Este correo fue generado automáticamente por el Sistema Universidad.</small>";     
 
