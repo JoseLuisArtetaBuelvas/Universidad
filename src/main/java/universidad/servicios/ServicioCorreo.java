@@ -9,7 +9,7 @@ public class ServicioCorreo {
 
     public static void enviarCorreo(String destinatario, String asunto, String mensaje) throws MessagingException {
         String remitente = EnvConfig.get("MAIL_USER", "josex.developer@gmail.com");
-        String claveAplicacion = EnvConfig.get("MAIL_PASSWORD", "yyss bqhm knnv cdrg");
+        String claveAplicacion = EnvConfig.get("MAIL_PASSWORD", "");
         String host = EnvConfig.get("MAIL_HOST", "smtp.gmail.com");
         String port = EnvConfig.get("MAIL_PORT", "587");
 

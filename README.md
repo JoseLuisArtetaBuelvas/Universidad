@@ -107,7 +107,9 @@ El repositorio incluye una plantilla [` .env.example `](./.env.example). Para co
 | `MAIL_HOST` | Servidor SMTP de correo | `smtp.gmail.com` | `smtp.gmail.com` |
 | `MAIL_PORT` | Puerto SMTP con TLS | `587` | `587` |
 | `MAIL_USER` | Correo emisor para restablecer claves | `josex.developer@gmail.com` | `tu_correo@gmail.com` |
-| `MAIL_PASSWORD` | Clave de aplicación de Google | `yyss bqhm knnv cdrg` | `xxxx xxxx xxxx xxxx` |
+| `MAIL_PASSWORD` | Clave de aplicación de Google | *(sin valor por defecto — obligatoria)* | `xxxx xxxx xxxx xxxx` |
+
+> ⚠️ `MAIL_PASSWORD` no tiene valor de respaldo en el código a propósito: es una credencial real de una cuenta de Gmail y nunca debe escribirse en el código fuente ni en este README. Configúrala siempre como variable de entorno (`.env` en local, *Environment Variables* del proveedor en la nube).
 
 ### 5. Configuración para Despliegue en la Nube
 Al desplegar en plataformas PaaS/IaaS como **Render**, **Railway**, **Docker** o **AWS**, no se sube el archivo `.env`. Simplemente define estas variables en la sección **Environment Variables** del panel de control de tu proveedor de hosting.
@@ -208,3 +210,9 @@ Universidad/
 3. **Módulo de Universidades:**
    * CRUD completo (Crear, Consultar por ID, Modificar, Eliminar, Listar todas).
    * Reportes parametrizados (filtrado por ciudad y categoría).
+
+---
+
+## 🌐 Despliegue
+
+*(pendiente)* — URL pública: `______`
