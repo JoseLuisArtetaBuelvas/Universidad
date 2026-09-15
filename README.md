@@ -215,4 +215,4 @@ Universidad/
 
 ## 🌐 Despliegue
 
-*(pendiente)* — URL pública: `______`
+*(pendiente)* — URL pública: `https://universidad-72o4.onrender.com/usuario/login.jsp`
